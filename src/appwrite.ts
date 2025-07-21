@@ -24,7 +24,7 @@ export const updateSearchCount = async (searchTerm, movie) => {
         if(result.documents.length > 0){
             const doc = result.documents[0]
             await database.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, {
-                count: doc.$count + 1
+                count: doc.count + 1
             })
         } else {
             await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
@@ -35,6 +35,6 @@ export const updateSearchCount = async (searchTerm, movie) => {
             })
         }
     } catch (e) {
-
+        console.error(e)
     }
 }

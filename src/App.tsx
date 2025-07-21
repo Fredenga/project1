@@ -24,7 +24,7 @@ const App = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
 
-    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 800, [searchTerm])
 
     const fetchMovies = async (query = "") => {
         setIsLoading(true)
@@ -45,7 +45,9 @@ const App = () => {
                 return;
             }
             setMovieList(data.results || [])
-            updateSearchCount()
+            if(query && data.results.length > 0){
+                await updateSearchCount(query, data.results[0])
+            }
         } catch (error) {
             console.error(`Fetching movies error: ${error}`)
             setErrorMessage("Error fetching movies, please try again later")
