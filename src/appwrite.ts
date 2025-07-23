@@ -1,4 +1,5 @@
 import {Client, Databases, ID, Query} from "appwrite";
+import type {Movie} from "./Movie.ts";
 
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
@@ -11,7 +12,7 @@ const client = new Client()
 
 const database = new Databases(client)
 
-export const updateSearchCount = async (searchTerm, movie) => {
+export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
     /*
     use appwrite sdk to check if search term already exists in the db
     if it does, update the count

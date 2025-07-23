@@ -4,6 +4,7 @@ import Spinner from "./components/Spinner.tsx";
 import MovieCard from "./components/MovieCard.tsx";
 import {useDebounce} from "react-use";
 import {getTrendingMovies, updateSearchCount} from "./appwrite.ts";
+import type {Movie} from "./Movie.ts";
 
 const API_BASE_URL = "https://api.themoviedb.org/3"
 
@@ -20,10 +21,10 @@ const API_OPTIONS = {
 const App = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
-    const [movieList, setMovieList] = useState([])
+    const [movieList, setMovieList] = useState<Movie[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-    const [trendingMovies, setTrendingMovies] = useState([])
+    const [trendingMovies, setTrendingMovies] = useState<Movie[]>([])
 
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 800, [searchTerm])
 
@@ -46,6 +47,7 @@ const App = () => {
                 return;
             }
             setMovieList(data.results || [])
+            console.log(movieList)
             if(query && data.results.length > 0){
                 await updateSearchCount(query, data.results[0])
             }
@@ -60,7 +62,29 @@ const App = () => {
     const loadTrendingMovies = async () => {
         try {
             const movies = await getTrendingMovies()
-            setTrendingMovies(movies)
+            
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            const fetchMovies = movies.map((movie): Movie => {
+                return {
+                    adult: movie.adult,
+                    backdrop_path: movie.backdrop_path,
+                    genre_ids: movie.genre_ids,
+                    id: movie.id,
+                    original_language: movie.original_language,
+                    original_title: movie.original_title,
+                    overview: movie.overview,
+                    popularity: movie.popularity,
+                    poster_path: movie.poster_path,
+                    poster_url: movie.poster_path,
+                    release_date: movie.release_date,
+                    title: movie.title,
+                    video: movie.video,
+                    vote_average: movie.vote_average,
+                    vote_count: movie.vote_count,
+                };
+            });
+            setTrendingMovies(fetchMovies)
         } catch (e) {
             console.error(`Fetching trending movies error: ${e}`)
         }
@@ -111,7 +135,7 @@ const App = () => {
                         <p className="text-red-500">{errorMessage}</p>
                     ): (
                         <ul>
-                            {movieList.map((movie: any) => (
+                            {movieList.map((movie: Movie) => (
                                 <MovieCard key={movie.id} movie={movie} />
                             ))}
                         </ul>
